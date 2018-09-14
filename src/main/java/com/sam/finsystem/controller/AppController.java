@@ -2,9 +2,9 @@ package com.sam.finsystem.controller;
 
 import java.util.List;
 import java.util.Locale;
- 
+
 import javax.validation.Valid;
- 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -14,8 +14,10 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
- 
+
+import com.sam.finsystem.model.Branch;
 import com.sam.finsystem.model.Employee;
+import com.sam.finsystem.service.BranchService;
 import com.sam.finsystem.service.EmployeeService;
  
 @Controller
@@ -24,14 +26,29 @@ public class AppController {
  
     @Autowired
     EmployeeService service;
+    
+    @Autowired
+    BranchService servicebranch;
      
     @Autowired
     MessageSource messageSource;
- 
+    
+    @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
+    public String home(ModelMap model) {
+    	Employee employee = new Employee();
+        model.addAttribute("employee", employee);
+        return "home";
+    }
+    
+    @RequestMapping(value = { "/contact" }, method = RequestMethod.GET)
+    public String contact(ModelMap model){
+    	return "contact";
+    }  
+    
     /*
      * This method will list all existing employees.
      */
-    @RequestMapping(value = { "/", "/list" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/list" }, method = RequestMethod.GET)
     public String listEmployees(ModelMap model) {
  
         List<Employee> employees = service.findAllEmployees();
@@ -39,6 +56,14 @@ public class AppController {
         return "allemployees";
     }
  
+    @RequestMapping(value = { "/listbranch" }, method = RequestMethod.GET)
+    public String listBranch(ModelMap model) {
+    	
+    	List<Branch> branch = servicebranch.findAllBranch();
+    	model.addAttribute("branch", branch);
+    	return "branch";
+    }
+    
     /*
      * This method will provide the medium to add a new employee.
      */
@@ -51,6 +76,17 @@ public class AppController {
         List<Employee> employees = service.findAllEmployees();
         model.addAttribute("employees", employees);
         return "registration";
+    }
+    
+    @RequestMapping(value = { "/newbranch" }, method = RequestMethod.GET)
+    public String newBranch(ModelMap model){
+    	Branch branch = new Branch();
+    	model.addAttribute("branch", branch);
+    	model.addAttribute("editbranchs", false);
+    	
+    	List<Branch> branchs = servicebranch.findAllBranch();
+    	model.addAttribute("branchs", branchs);
+		return "branch";
     }
  
     /*
@@ -85,7 +121,26 @@ public class AppController {
         return "success";
     }
  
- 
+    @RequestMapping(value = { "/newbranch" }, method = RequestMethod.POST)
+    public String saveBranch(@Valid Branch branch, BindingResult result, 
+    		ModelMap model) {
+    	
+    	if (result.hasErrors()){
+    		return "branch";
+    	}
+    	
+    	if(!servicebranch.isBranchCodeUnique(branch.getId(), branch.getBranchCode())){
+    		FieldError branchCodeError = new FieldError ("branch","branchCode", messageSource.getMessage("non.unique.branchCode", new String[]{branch.getBranchCode()}, Locale.getDefault()));
+    		result.addError(branchCodeError);
+    		return "branch";
+    	}
+    	
+    	servicebranch.saveBranch(branch);
+    	
+    	model.addAttribute("success", "Branch " + branch.getBranchName() + " registered successfully");
+		return "success";	
+    }
+    
     /*
      * This method will provide the medium to update an existing employee.
      */
@@ -97,6 +152,14 @@ public class AppController {
         return "registration";
     }
      
+    @RequestMapping(value = { "/edit-{branchCode}-branch" }, method = RequestMethod.GET)
+    public String editBranch(@PathVariable String branchCode, ModelMap model) {
+        Branch branch = servicebranch.findBranchByBranchCode(branchCode);
+        model.addAttribute("branch", branch);
+        model.addAttribute("editbranchs", true);
+        return "branch";
+    }
+    
     /*
      * This method will be called on form submission, handling POST request for
      * updating employee in database. It also validates the user input
@@ -121,7 +184,25 @@ public class AppController {
         return "success";
     }
  
-     
+    @RequestMapping(value = { "/edit-{branchCode}-branch" }, method = RequestMethod.POST)
+    public String updateBranch(@Valid Branch branch, BindingResult result,
+            ModelMap model, @PathVariable String branchCode) {
+ 
+        if (result.hasErrors()) {
+            return "branch";
+        }
+ 
+        if(!servicebranch.isBranchCodeUnique(branch.getId(), branch.getBranchCode())){
+            FieldError branchCodeError =new FieldError("branch","branchCode",messageSource.getMessage("non.unique.branchCode", new String[]{branch.getBranchCode()}, Locale.getDefault()));
+            result.addError(branchCodeError);
+            return "branch";
+        }
+ 
+        servicebranch.updateBranch(branch);
+ 
+        model.addAttribute("success", "Branch " + branch.getBranchName()  + " updated successfully");
+        return "success";
+    } 
     /*
      * This method will delete an employee by it's SSN value.
      */
@@ -129,6 +210,12 @@ public class AppController {
     public String deleteEmployee(@PathVariable String ssn) {
         service.deleteEmployeeBySsn(ssn);
         return "redirect:/list";
+    }
+    
+    @RequestMapping(value = { "/delete-{branchCode}-branch" }, method = RequestMethod.GET)
+    public String deleteBranch(@PathVariable String branchCode) {
+        servicebranch.deleteBranchByBranchCode(branchCode);
+        return "redirect:/newbranch";
     }
  
 }

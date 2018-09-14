@@ -3,8 +3,8 @@
     xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.websystique.springmvc</groupId>
-    <artifactId>SpringHibernateExample</artifactId>
+    <groupId>com.sam.finsystem</groupId>
+    <artifactId>finsystem</artifactId>
     <packaging>war</packaging>
     <version>1.0.0</version>
     <name>finsystem</name>

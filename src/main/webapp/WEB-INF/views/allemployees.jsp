@@ -12,11 +12,21 @@
             background-color: #C6C9C4;
         }
     </style>
- 	<link href="<c:url value='/static/css/bootstrap.min.css' />"  rel="stylesheet"></link>
+    
+ 	<!-- Bootstrap core CSS -->
+    <link href="<c:url value='/static/css/bootstrap.min.css' />"  rel="stylesheet"></link>
+
+    <!-- Custom styles for this template -->
+    <link href="<c:url value='/static/css/small-business.css' />"  rel="stylesheet"></link>
+    
 </head>
  
  
 <body>
+
+   <!-- Navigation -->
+		<%@include file="./shared/navbar.jsp"%>
+		
     <h2>List of Employees</h2>  
     <table>
         <tr>
@@ -34,5 +44,10 @@
     </table>
     <br/>
     <a href="<c:url value='/new' />">Add New Employee</a>
+    
+    <!-- Bootstrap core JavaScript -->
+	<script src="<c:url value='/static/jquery/jquery.min.js' />"></script>
+	<script src="<c:url value='/static/js/bootstrap.bundle.min.js' />"></script>
+	
 </body>
 </html>

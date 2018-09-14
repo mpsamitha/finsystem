@@ -15,11 +15,20 @@
         color: #ff0000;
     }
 </style>
- 
+     
+ 	<!-- Bootstrap core CSS -->
+    <link href="<c:url value='/static/css/bootstrap.min.css' />"  rel="stylesheet"></link>
+
+    <!-- Custom styles for this template -->
+    <link href="<c:url value='/static/css/small-business.css' />"  rel="stylesheet"></link>
+    
 </head>
  
 <body>
  
+   <!-- Navigation -->
+		<%@include file="./shared/navbar.jsp"%>
+		
     <h2>Registration Form</h2>
   
     <form:form method="POST" modelAttribute="employee">
@@ -67,5 +76,9 @@
     <br/>
     Go back to <a href="<c:url value='/list' />">List of All Employees</a>
     
+    <!-- Bootstrap core JavaScript -->
+	<script src="<c:url value='/static/jquery/jquery.min.js' />"></script>
+	<script src="<c:url value='/static/js/bootstrap.bundle.min.js' />"></script>
+	
 </body>
 </html>
